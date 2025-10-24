@@ -6,7 +6,7 @@
    1. [Change directory to `projects` folder](#Change-directory-to-projects-folder)
    2. [Clone repository](#Clone-repository)
 2. [Updating scripts](#Updating-scripts)
-3. [Creating container for MaxQuant](#Creating-container-for-MaxQuant)
+3. [Creating container for SQuIRE](#Creating-container-for-SQuIRE)
 
 ## Installing of the scripts
 
