@@ -1,0 +1,82 @@
+Bootstrap: docker
+From: ubuntu:16.04
+
+%arguments
+  version=v0.9.9.9
+  commit=7c4c79a0d2882d8b72a5c28c44313b97183b7983
+
+%environment
+  export PATH="/opt/conda/envs/squire/bin:/opt/conda/bin:$PATH"
+  export PATH="/opt/SQuIRE/squire_build/samtools-1.1/samtools-1.1:$PATH"
+
+%post
+  export version={{ version }}
+  export commit={{ commit }}
+  echo "Version argument is $version and commit argument is $commit"
+  apt update
+  apt install -y wget build-essential gfortran zlib1g-dev git libncurses5-dev gawk
+  apt clean -y
+  rm -rf /var/lib/apt/lists/*
+
+# Replace symlink for /bin/bash to bash
+  rm /bin/sh
+  ln -s /bin/bash /bin/sh
+
+# Install miniconda
+  wget https://repo.anaconda.com/miniconda/Miniconda3-py39_25.7.0-2-Linux-x86_64.sh -O miniconda.sh && \
+      bash miniconda.sh -b -p /opt/conda && \
+      rm -f miniconda.sh
+  export PATH="/opt/conda/bin:$PATH"
+  conda config --add channels defaults
+  conda config --add channels bioconda
+  conda config --add channels conda-forge
+  conda config --set channel_priority flexible
+  conda tos view
+  conda tos accept
+
+# Create bind points for Compute Canada
+  mkdir /scratch
+  mkdir /localscratch
+
+# Install squire requirements using conda
+  export PATH=/opt/conda/envs/squire/bin:$PATH
+  conda create --name squire \
+      python=2.7.* \
+      pyfaidx=0.7.0 \
+      r-base=3.4.1 \
+      r-ggrepel=0.8.0 \
+      r-hexbin=1.27.2 \
+      r-pheatmap=1.0.10 \
+      bioconductor-biocparallel=1.12.0 \
+      bioconductor-deseq2=1.16.1 \
+      bioconductor-vsn=3.46.0 \
+      bedtools=2.25.0 \
+      igvtools=2.3.93 \
+      star=2.5.3a \
+      stringtie=1.3.3 \
+      ucsc-bedgraphtobigwig=377 \
+      ucsc-genepredtobed=377 \
+      ucsc-genepredtogtf=377 \
+      ucsc-gtftogenepred=377
+  
+#Install squire
+  cd /opt
+  git clone https://github.com/wyang17/SQuIRE.git
+  cd SQuIRE
+  git checkout "$commit"
+  python squire/Build.py -v -s samtools
+  python -m pip install .
+# Test squire Fetch.
+#  python squire/Fetch.py -b hg38 -f -c -r -g -x -p 32 -v && python squire/Clean.py -b hg38 -v
+
+%runscript
+  echo "Running squire with command: squire $*"
+  exec squire "$@"
+
+%labels
+  Author Christian Poitras, IRCM
+  Label {{ version }}__{{ commit }}
+
+%help
+    Runs squire with all parameters specified. The command `squire` should not be a parameter
+    unless 'apptainer exec' is used.
