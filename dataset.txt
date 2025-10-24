@@ -1,0 +1,3 @@
+#Dataset	Samples	Condition	Control
+Repo_TDP43	Repo_TDP43_S05,Repo_TDP43_S06	control	
+TDP43_2U	TDP43_2U_S14,TDP43_2U_S15	TDP43_2U_head	Repo_TDP43
