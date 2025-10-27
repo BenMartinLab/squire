@@ -33,10 +33,12 @@ then
   output_folder="/tmp/${output_folder}"
   echo "Changing output folder from $original_output_folder to $output_folder"
   copy_temp_to_output() {
+    save_exit=$?
     echo "Copying output files from $slurm_output_folder to $original_output_folder"
-    cp -f "${slurm_output_folder}"/* "$original_output_folder"
+    rsync -rvt "${slurm_output_folder}"/* "$original_output_folder"
+    exit "$save_exit"
   }
-  trap 'copy_temp_to_output; exit' ERR EXIT
+  trap 'copy_temp_to_output' ERR EXIT
 fi
 
 bash squire.sh Count \
