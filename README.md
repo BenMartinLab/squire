@@ -59,8 +59,8 @@ The `dataset.txt` file should contain the following columns.
 You should save the number of samples and dataset in variables to use later with `sbatch`.
 
 ```shell
-samples_end=$(awk '$0 !~ /[ \t]*#/ {ln++} END {print ln-1}' samples.txt)
-dataset_end=$(awk '$0 !~ /[ \t]*#/ {ln++} END {print ln-1}' dataset.txt)
+samples_array=$(awk '$0 !~ /[ \t]*#/ {ln++} END {print "0-"ln-1}' samples.txt)
+dataset_array=$(awk '{ if ($0 !~ /[ \t]*#/) {ln++; if ($4 != "") {array=array","ln-1}}} END {print substr(array, 2)}' dataset.txt)
 ```
 
 ## Download genome for SQuIRE
@@ -97,7 +97,7 @@ sbatch squire-clean.sh $genome
 See [SQuIRE Map documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-map)
 
 ```shell
-sbatch --array=0-$samples_end squire-map.sh
+sbatch --array="$samples_array" squire-map.sh
 ```
 
 ## Run SQuIRE Count
@@ -105,7 +105,7 @@ sbatch --array=0-$samples_end squire-map.sh
 See [SQuIRE Count documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-count)
 
 ```shell
-sbatch --array=0-$samples_end squire-count.sh
+sbatch --array="$samples_array" squire-count.sh
 ```
 
 ## Run SQuIRE Call
@@ -113,7 +113,7 @@ sbatch --array=0-$samples_end squire-count.sh
 See [SQuIRE Call documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-call)
 
 ```shell
-sbatch --array=0-$dataset_end squire-call.sh
+sbatch --array="$dataset_array" squire-call.sh
 ```
 
 ## Run SQuIRE Draw
@@ -121,7 +121,7 @@ sbatch --array=0-$dataset_end squire-call.sh
 See [SQuIRE Draw documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-draw)
 
 ```shell
-sbatch --array=0-$samples_end squire-draw.sh
+sbatch --array="$samples_array" squire-draw.sh
 ```
 
 ## Output
