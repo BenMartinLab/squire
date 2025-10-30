@@ -97,7 +97,7 @@ sbatch squire-clean.sh $genome
 See [SQuIRE Map documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-map)
 
 ```shell
-sbatch --array="$samples_array" squire-map.sh
+sbatch --array="$samples_array" squire-map.sh $genome
 ```
 
 ## Run SQuIRE Count
@@ -105,7 +105,7 @@ sbatch --array="$samples_array" squire-map.sh
 See [SQuIRE Count documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-count)
 
 ```shell
-sbatch --array="$samples_array" squire-count.sh
+sbatch --array="$samples_array" squire-count.sh $genome
 ```
 
 ## Run SQuIRE Call
@@ -121,7 +121,7 @@ sbatch --array="$dataset_array" squire-call.sh
 See [SQuIRE Draw documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-draw)
 
 ```shell
-sbatch --array="$samples_array" squire-draw.sh
+sbatch --array="$samples_array" squire-draw.sh $genome
 ```
 
 ## Output
