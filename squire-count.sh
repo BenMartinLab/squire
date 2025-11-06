@@ -35,6 +35,9 @@ then
   copy_temp_to_output() {
     save_exit=$?
     trap - ERR EXIT SIGINT
+    echo
+    echo "SQuIRE exit code is $save_exit"
+    echo
     echo "Copying output files from $slurm_output_folder to $original_output_folder"
     rsync -rvt "${slurm_output_folder}"/* "$original_output_folder"
     exit "$save_exit"
