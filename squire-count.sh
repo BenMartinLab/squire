@@ -42,7 +42,7 @@ then
     rsync -rvt "${slurm_output_folder}"/* "$original_output_folder"
     exit "$save_exit"
   }
-  trap 'copy_temp_to_output' ERR EXIT
+  trap 'copy_temp_to_output' ERR EXIT SIGINT
 fi
 
 bash squire.sh Count \
