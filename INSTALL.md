@@ -69,5 +69,5 @@ apptainer build --fakeroot --build-arg version=$version --build-arg commit=$comm
 ### Copy container on Globus
 
 ```shell
-scp maxquant-$version.sif 'narval.computecanada.ca:~/projects/def-bmartin/Sharing/globus-shared-apps/squire'
+scp squire-$version-$commit.sif 'narval.computecanada.ca:~/projects/def-bmartin/Sharing/globus-shared-apps/squire'
 ```
