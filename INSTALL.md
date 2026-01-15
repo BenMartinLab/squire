@@ -3,23 +3,17 @@
 ### Steps
 
 1. [Installing of the scripts](#Installing-of-the-scripts)
-   1. [Change directory to `projects` folder](#Change-directory-to-projects-folder)
+   1. [Change directory to `project` folder](#Change-directory-to-project-folder)
    2. [Clone repository](#Clone-repository)
 2. [Updating scripts](#Updating-scripts)
 3. [Creating container for SQuIRE](#Creating-container-for-SQuIRE)
 
 ## Installing of the scripts
 
-### Change directory to projects folder
+### Change directory to project folder
 
 ```shell
-cd ~/projects/def-bmartin/scripts
-```
-
-For Rorqual server, use
-
-```shell
-cd ~/links/projects/def-bmartin/scripts
+cd /project/def-bmartin/scripts
 ```
 
 ### Clone repository
@@ -33,14 +27,7 @@ git clone https://github.com/BenMartinLab/squire.git
 Go to the squire scripts folder and run `git pull`.
 
 ```shell
-cd ~/projects/def-bmartin/scripts/squire
-git pull
-```
-
-For Rorqual server, use
-
-```shell
-cd ~/links/projects/def-bmartin/scripts/squire
+cd /project/def-bmartin/scripts/squire
 git pull
 ```
 
@@ -69,5 +56,5 @@ apptainer build --fakeroot --build-arg version=$version --build-arg commit=$comm
 ### Copy container on Globus
 
 ```shell
-scp squire-$version-$commit.sif 'narval.computecanada.ca:~/projects/def-bmartin/Sharing/globus-shared-apps/squire'
+scp squire-$version-$commit.sif 'narval.computecanada.ca:/project/def-bmartin/Sharing/globus-shared-apps/squire'
 ```

@@ -21,13 +21,7 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 ## Add SQuIRE scripts folder to your PATH
 
 ```shell
-export PATH=~/projects/def-bmartin/scripts/squire:$PATH
-```
-
-For Rorqual server, use
-
-```shell
-export PATH=~/links/projects/def-bmartin/scripts/squire:$PATH
+export PATH=/project/def-bmartin/scripts/squire:$PATH
 ```
 
 ## Download SQuIRE container
