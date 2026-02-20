@@ -7,7 +7,15 @@ then
   module load apptainer/1
 fi
 
-container="squire-v0.9.9.9-7c4c79a.sif"
+containers=(squire-*.sif)
+if [[ -f "${containers[0]}" ]]
+then
+  container=${containers[0]}
+else
+  >&2 echo "Error: no containers were found in current folder, exiting..."
+  exit 1
+fi
+
 workdir=${SLURM_TMPDIR:-${PWD}}
 if [[ -n "$SLURM_TMPDIR" ]]
 then
@@ -18,9 +26,10 @@ else
   trap 'rm -rf "$workdir"; exit' ERR EXIT
 fi
 
-apptainer_params=("--containall" "--workdir" "$workdir" "--pwd" "/data" "--bind" "$PWD:/data" \
-    "$container")
+apptainer_params=("--containall" "--workdir" "$workdir" "--pwd" "/data" \
+    "--bind" "$PWD:/data")
 
 apptainer run \
   "${apptainer_params[@]}" \
+  "$container" \
     "$@"

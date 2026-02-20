@@ -18,7 +18,16 @@ fi
 
 threads=${SLURM_CPUS_PER_TASK:-1}
 
-container="squire-v0.9.9.9-7c4c79a.sif"
+containers=(squire-*.sif)
+if [[ -f "${containers[0]}" ]]
+then
+  container=${containers[0]}
+else
+  >&2 echo "Error: no containers were found in current folder, exiting..."
+  exit 1
+fi
+
+# Copy container to SLURM_TMPDIR for faster access.
 workdir=${SLURM_TMPDIR:-${PWD}}
 if [[ -n "$SLURM_TMPDIR" ]]
 then
@@ -29,12 +38,13 @@ else
   trap 'rm -rf "$workdir"; exit' ERR EXIT
 fi
 
-apptainer_params=("--containall" "--workdir" "$workdir" "--pwd" "/data" "--bind" "$PWD:/data" \
-    "$container")
+apptainer_params=("--containall" "--workdir" "$workdir" "--pwd" "/data" \
+    "--bind" "$PWD:/data")
 
 echo "Running STAR $*"
 apptainer exec \
   "${apptainer_params[@]}" \
+  "$container" \
     STAR \
     --runThreadN "$threads" \
     "$@"
