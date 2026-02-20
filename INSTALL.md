@@ -5,6 +5,7 @@
 1. [Installing of the scripts](#Installing-of-the-scripts)
    1. [Change directory to `project` folder](#Change-directory-to-project-folder)
    2. [Clone repository](#Clone-repository)
+   3. [Download SQuIRE container](#Download-SQuIRE-container)
 2. [Updating scripts](#Updating-scripts)
 3. [Creating container for SQuIRE](#Creating-container-for-SQuIRE)
 
@@ -21,6 +22,17 @@ cd /project/def-bmartin/scripts
 ```shell
 git clone https://github.com/BenMartinLab/squire.git
 ```
+
+### Download SQuIRE container
+
+> [!NOTE]
+> The URL should be updated when Ben create a folder shared by Globus.
+
+```shell
+wget https://g-88ccb6.6d81c.5898.data.globus.org/squire/squire-v0.9.9.9-7c4c79a.sif
+```
+
+If previous command fails, see [Creating container for SQuIRE](#Creating-container-for-SQuIRE)
 
 ## Updating scripts
 

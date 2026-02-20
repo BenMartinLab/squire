@@ -7,7 +7,6 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 ### Steps
 
 1. [Add SQuIRE scripts folder to your PATH](#Add-SQuIRE-scripts-folder-to-your-PATH)
-2. [Download SQuIRE container](#Download-SQuIRE-container)
 3. [Create samples and dataset files](#Create-samples-and-dataset-files)
 4. [Download genome for SQuIRE](#Download-genome-for-SQuIRE)
 5. [Create index of genome](#Create-index-of-genome)
@@ -22,15 +21,6 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 
 ```shell
 export PATH=/project/def-bmartin/scripts/squire:$PATH
-```
-
-## Download SQuIRE container
-
-> [!NOTE]
-> The URL should be updated when Ben create a folder shared by Globus.
-
-```shell
-wget https://g-88ccb6.6d81c.5898.data.globus.org/squire/squire-v0.9.9.9-7c4c79a.sif
 ```
 
 ## Create samples and dataset files
