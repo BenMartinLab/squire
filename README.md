@@ -69,7 +69,14 @@ Use script squire-fetch.sh to download the genome for SQuIRE. See [SQuIRE Fetch 
 
 
 ```shell
-bash squire-fetch.sh $genome
+bash squire.sh Fetch \
+    --build $genome \
+    --fetch_folder squire_fetch \
+    --fasta \
+    --rmsk \
+    --chrom_info \
+    --gene \
+    --verbosity
 ```
 
 ## Create index of genome
