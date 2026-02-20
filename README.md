@@ -82,7 +82,11 @@ bash squire.sh Fetch \
 ## Create index of genome
 
 ```shell
-sbatch star-index.sh $genome
+mkdir squire_fetch/${genome}_STAR
+sbatch star.sh \
+    --runMode genomeGenerate \
+    --genomeFastaFiles squire_fetch/$genome.chromFa/*.fa \
+    --genomeDir squire_fetch/${genome}_STAR
 ```
 
 ## Run SQuIRE Clean

@@ -3,7 +3,7 @@
 #SBATCH --time=12:00:00
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --output=star-index-%A.out
+#SBATCH --output=star-%A.out
 
 # exit when any command fails
 set -e
@@ -17,11 +17,6 @@ then
 fi
 
 threads=${SLURM_CPUS_PER_TASK:-1}
-
-genome_name=${1:-dm6}
-output_dir=${2:-squire_fetch}
-star_fasta="${output_dir}/${genome_name}.chromFa/${genome_name}.fa"
-star_index="${output_dir}/${genome_name}_STAR"
 
 container="squire-v0.9.9.9-7c4c79a.sif"
 workdir=${SLURM_TMPDIR:-${PWD}}
@@ -37,12 +32,9 @@ fi
 apptainer_params=("--containall" "--workdir" "$workdir" "--pwd" "/data" "--bind" "$PWD:/data" \
     "$container")
 
-echo "Generating STAR index for Drosophila Melanogaster genome"
-mkdir -p "$star_index"
+echo "Running STAR $*"
 apptainer exec \
   "${apptainer_params[@]}" \
     STAR \
     --runThreadN "$threads" \
-    --runMode genomeGenerate \
-    --genomeFastaFiles "$star_fasta" \
-    --genomeDir "$star_index"
+    "$@"
