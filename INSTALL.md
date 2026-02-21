@@ -8,6 +8,7 @@
    3. [Download SQuIRE container](#Download-SQuIRE-container)
 2. [Updating scripts](#Updating-scripts)
 3. [Creating container for SQuIRE](#Creating-container-for-SQuIRE)
+4. [Download genome for SQuIRE](#Download-genome-for-SQuIRE)
 
 ## Installing of the scripts
 
@@ -69,4 +70,62 @@ apptainer build --fakeroot --build-arg version=$version --build-arg commit=$comm
 
 ```shell
 scp squire-$version-$commit.sif 'narval.computecanada.ca:/project/def-bmartin/Sharing/globus-shared-apps/squire'
+```
+
+## Download genome for SQuIRE
+
+Add SQuIRE scripts folder to your PATH.
+
+```shell
+export PATH=/project/def-bmartin/scripts/squire:$PATH
+```
+
+Use UCSC designation for genome build, eg. 'hg38'.
+
+```shell
+genome=hg38
+```
+
+Create folder for the genome.
+
+```shell
+mkdir -p genomes/$genome
+```
+
+Go to the newly created folder.
+
+```shell
+cd genomes/$genome
+```
+
+Run squire Fetch, see [SQuIRE Fetch documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-fetch).
+
+```shell
+bash squire.sh Fetch \
+    --build $genome \
+    --fetch_folder squire_fetch \
+    --fasta \
+    --rmsk \
+    --chrom_info \
+    --gene \
+    --verbosity
+```
+
+Run STAR to create index.
+
+```shell
+mkdir squire_fetch/${genome}_STAR
+sbatch star.sh \
+    --runMode genomeGenerate \
+    --genomeFastaFiles squire_fetch/$genome.chromFa/*.fa \
+    --genomeDir squire_fetch/${genome}_STAR
+```
+
+Run squire Clean, see [SQuIRE Clean documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-clean).
+
+```shell
+sbatch squire.sh Clean \
+    --rmsk squire_fetch/${genome}_rmsk.txt \
+    --clean_folder squire_clean \
+    --verbosity
 ```

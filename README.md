@@ -7,15 +7,13 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 ### Steps
 
 1. [Add SQuIRE scripts folder to your PATH](#Add-SQuIRE-scripts-folder-to-your-PATH)
-3. [Create samples and dataset files](#Create-samples-and-dataset-files)
-4. [Download genome for SQuIRE](#Download-genome-for-SQuIRE)
-5. [Create index of genome](#Create-index-of-genome)
-6. [Run SQuIRE Clean](#Run-SQuIRE-Clean)
-7. [Run SQuIRE Map](#Run-SQuIRE-Map)
-8. [Run SQuIRE Count](#Run-SQuIRE-Count)
-9. [Run SQuIRE Call](#Run-SQuIRE-Call)
-10. [Run SQuIRE Draw](#Run-SQuIRE-Draw)
-11. [Output](#Output)
+2. [Create samples and dataset files](#Create-samples-and-dataset-files)
+3. [Copy genome for SQuIRE](#Copy-genome-for-SQuIRE)
+4. [Run SQuIRE Map](#Run-SQuIRE-Map)
+5. [Run SQuIRE Count](#Run-SQuIRE-Count)
+6. [Run SQuIRE Call](#Run-SQuIRE-Call)
+7. [Run SQuIRE Draw](#Run-SQuIRE-Draw)
+8. [Output](#Output)
 
 ## Add SQuIRE scripts folder to your PATH
 
@@ -47,44 +45,40 @@ samples_array=$(awk '$0 !~ /[ \t]*#/ {ln++} END {print "0-"ln-1}' samples.txt)
 dataset_array=$(awk '{ if ($0 !~ /[ \t]*#/) {ln++; if ($4 != "") {array=array","ln-1}}} END {print substr(array, 2)}' dataset.txt)
 ```
 
-## Download genome for SQuIRE
+## Copy genome for SQuIRE
 
-Use UCSC designation for genome build, eg. 'hg38'.
+First, set the location of the genomes.
 
 ```shell
-genome=hg38
+genomes_folder=/project/def-bmartin/scripts/squire/genomes
 ```
 
-Use script squire-fetch.sh to download the genome for SQuIRE. See [SQuIRE Fetch documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-fetch)
-
+Then, locate the genome that you want. A good command is to use `ls` to find the desired main genome.
 
 ```shell
-bash squire.sh Fetch \
-    --build $genome \
-    --fetch_folder squire_fetch \
-    --fasta \
-    --rmsk \
-    --chrom_info \
-    --gene \
-    --verbosity
+ls $genomes_folder
 ```
 
-## Create index of genome
+For example, if you want a human genome, you can look at the `hg38` sub-folder.
 
 ```shell
-mkdir squire_fetch/${genome}_STAR
-sbatch star.sh \
-    --runMode genomeGenerate \
-    --genomeFastaFiles squire_fetch/$genome.chromFa/*.fa \
-    --genomeDir squire_fetch/${genome}_STAR
+ls $genomes_folder/hg38
 ```
 
-## Run SQuIRE Clean
+You can save the genome location as a variable to simplify later commands.
 
-See [SQuIRE Clean documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-clean)
+> [!IMPORTANT]
+> Change `hg38` by the genome you want to use.
 
 ```shell
-sbatch squire-clean.sh $genome
+genome_location=$genomes_folder/hg38
+```
+
+Once you have located the genome that you wish to use, I recommend to copy it to the scratch folder along other files like FASTQ.
+
+```shell
+cp -r $genome_location/squire_fetch .
+cp -r $genome_location/squire_clean .
 ```
 
 ## Run SQuIRE Map
