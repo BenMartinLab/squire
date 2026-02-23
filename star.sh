@@ -48,7 +48,7 @@ fi
 apptainer_params=("--containall" "--workdir" "$workdir" "--pwd" "/data" \
     "--bind" "$PWD:/data")
 
-echo "Running STAR $*"
+echo "Running STAR --runThreadN $threads $*"
 apptainer exec \
   "${apptainer_params[@]}" \
   "$container" \
