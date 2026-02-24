@@ -6,8 +6,8 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 
 ### Steps
 
-1. [Add SQuIRE scripts folder to your PATH](#Add-SQuIRE-scripts-folder-to-your-PATH)
-2. [Create samples and dataset files](#Create-samples-and-dataset-files)
+1. [Create samplesheet file](#Create-samplesheet-file)
+2. [Prepare working environment](#Prepare-working-environment)
 3. [Copy genome for SQuIRE](#Copy-genome-for-SQuIRE)
 4. [Run SQuIRE Map](#Run-SQuIRE-Map)
 5. [Run SQuIRE Count](#Run-SQuIRE-Count)
@@ -15,13 +15,46 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 7. [Run SQuIRE Draw](#Run-SQuIRE-Draw)
 8. [Output](#Output)
 
-## Add SQuIRE scripts folder to your PATH
+## Create samplesheet file
+
+Create the samplesheet file using the instructions for nf-core RNA-seq pipeline. See [Samplesheet for RNA-seq pipeline](https://nf-co.re/rnaseq/3.22.2/docs/usage/#samplesheet-input)
+
+[Here is an example of a samplesheet file](samplesheet.csv)
+
+## Prepare working environment
+
+Add SQuIRE scripts folder to your PATH
 
 ```shell
 export PATH=/project/def-bmartin/scripts/squire:$PATH
 ```
 
+### Set additional variables
+
+> [!IMPORTANT]
+> Change `samplesheet.csv` by your actual samplesheet filename.
+
+```shell
+samplesheet=samplesheet.csv
+```
+
+```shell
+samples_array=$(awk -F ',' \
+    'NR > 1 && !seen[$1] {ln++; seen[$1]++} END {print "0-"ln-1}' \
+    "$samplesheet")
+```
+
+> [!IMPORTANT]
+> Change `100` by the actual read length of your FASTQ files.
+
+```shell
+read_length=100
+```
+
 ## Create samples and dataset files
+
+> [!IMPORTANT]
+> Ignore this section. It will be removed.
 
 See [samples.txt](samples.txt) and [dataset.txt](dataset.txt) for examples. Any lines starting with `#` are ignored.
 
