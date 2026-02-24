@@ -119,7 +119,10 @@ cp -r $genome_location/squire_clean .
 See [SQuIRE Map documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-map)
 
 ```shell
-sbatch --array="$samples_array" squire-map.sh $genome
+sbatch --array=$samples_array squire-map.sh \
+    -s $samplesheet \
+    --read_length $read_length \
+    --verbosity
 ```
 
 ## Run SQuIRE Count
