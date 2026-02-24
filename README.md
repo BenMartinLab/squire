@@ -105,20 +105,20 @@ For example, if you want a human genome, you can look at the `hg38` sub-folder.
 ls $genomes_folder/hg38
 ```
 
-You can save the genome location as a variable to simplify later commands.
+You can save the genome name as a variable to simplify later commands.
 
 > [!IMPORTANT]
 > Change `hg38` by the genome you want to use.
 
 ```shell
-genome_location=$genomes_folder/hg38
+genome=hg38
 ```
 
 Once you have located the genome that you wish to use, I recommend to copy it to the scratch folder along other files like FASTQ.
 
 ```shell
-cp -r $genome_location/squire_fetch .
-cp -r $genome_location/squire_clean .
+cp -r $genomes_folder/$genome/squire_fetch .
+cp -r $genomes_folder/$genome/squire_clean .
 ```
 
 ## Run SQuIRE Map
@@ -157,7 +157,12 @@ sbatch --array="$dataset_array" squire-call.sh
 See [SQuIRE Draw documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-draw)
 
 ```shell
-sbatch --array="$samples_array" squire-draw.sh $genome
+sbatch --array=$samples_array squire-draw.sh \
+    -s $samplesheet \
+    --build $genome \
+    --strandedness $strandedness \
+    --normlib \
+    --verbosity
 ```
 
 ## Output
