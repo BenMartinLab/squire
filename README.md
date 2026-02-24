@@ -51,6 +51,13 @@ samples_array=$(awk -F ',' \
 read_length=100
 ```
 
+> [!IMPORTANT]
+> Change `0` by the actual strandedness of your sequences. See [SQuIRE Count documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-count). 
+
+```shell
+strandedness=0
+```
+
 ## Create samples and dataset files
 
 > [!IMPORTANT]
@@ -130,7 +137,11 @@ sbatch --array=$samples_array squire-map.sh \
 See [SQuIRE Count documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-count)
 
 ```shell
-sbatch --array="$samples_array" squire-count.sh $genome
+sbatch --array=$samples_array squire-count.sh \
+    -s $samplesheet \
+    --read_length $read_length \
+    --strandedness $strandedness \
+    --verbosity
 ```
 
 ## Run SQuIRE Call
