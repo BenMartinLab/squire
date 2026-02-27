@@ -58,7 +58,7 @@ samples_array=$(awk -F ',' \
 ```shell
 group_array=$(awk -F ',' \
     'NR == 1 {for (i = 1; i <= NF; i++) if ($i == "control") {control_column=i; break}}
-    {group=gensub(/[^_]*_(.*)_REP[0-9]**/,"\\1","1",$1)} NR > 1 && !seen[group] {ln++; seen[group]++; {if ($control_column != "") {array=array","ln-1}}}
+    {group=gensub(/(.*)_REP[0-9]**/,"\\1","1",$1)} NR > 1 && !seen[group] {ln++; seen[group]++; {if ($control_column != "") {array=array","ln-1}}}
     END {print substr(array, 2)}' \
     "$samplesheet")
 ```
@@ -141,7 +141,7 @@ sbatch --array=$samples_array squire-count.sh \
 See [SQuIRE Call documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-call)
 
 ```shell
-sbatch --array="$group_array" squire-call.sh \
+sbatch --array=$group_array squire-call.sh \
     -s $samplesheet \
     --output_format pdf \
     --verbosity

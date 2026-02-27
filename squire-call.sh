@@ -89,7 +89,7 @@ then
 fi
 
 group=$(awk -F ',' -v group_index="$index" \
-    '{group=gensub(/[^_]*_(.*)_REP[0-9]*/,"\\1","1",$1)} NR > 1 && !seen[group] {ln++; seen[group]++} ln == group_index {group_index=-1; print group}' \
+    '{group=gensub(/(.*)_REP[0-9]*/,"\\1","1",$1)} NR > 1 && !seen[group] {ln++; seen[group]++} ln == group_index {group_index=-1; print group}' \
     "$samplesheet")
 if [[ -z "$group" ]]
 then
@@ -97,7 +97,7 @@ then
   exit 1
 fi
 control_group=$(awk -F ',' -v group="$group" -v control_column="$control_column" \
-    'NR > 1 && $1 ~ "^[^_]*_"group {control_group=gensub(/[^_]*_(.*)_REP[0-9]*/,"\\1","1",$control_column); print control_group; exit(0)}' \
+    'NR > 1 && $1 ~ "^"group {control_group=gensub(/(.*)_REP[0-9]*/,"\\1","1",$control_column); print control_group; exit(0)}' \
     "$samplesheet")
 if [[ -z "$control_group" ]]
 then
@@ -105,7 +105,7 @@ then
   exit 1
 fi
 samplesheet_lines_raw=$(awk -F ',' -v group="$group" \
-    'NR > 1 && $1 ~ "^[^_]*_"group {print $0}' \
+    'NR > 1 && $1 ~ "^"group {print $0}' \
     "$samplesheet")
 readarray -t samplesheet_lines <<< "$samplesheet_lines_raw"
 for line in "${samplesheet_lines[@]}"
