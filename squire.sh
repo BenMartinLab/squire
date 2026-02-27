@@ -13,7 +13,7 @@ then
 fi
 
 script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-if ! [[ -f "${script_path}/nfcore-rnaseq.sh" ]] && [[ -n "$SLURM_JOB_ID" ]]
+if ! [[ -f "${script_path}/squire.sh" ]] && [[ -n "$SLURM_JOB_ID" ]]
 then
   script_path=$(dirname "$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')")
 fi
