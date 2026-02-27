@@ -158,6 +158,7 @@ sbatch --cpus-per-task=2 --mem=8G squire.sh Call \
     --group1 PF9363_REP1,PF9363_REP2 \
     --group2 DMSO_REP1,DMSO_REP2 \
     --output_format pdf \
+    --call_folder squire_call_PF9363 \
     --verbosity
 ```
 

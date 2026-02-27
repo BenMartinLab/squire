@@ -18,14 +18,16 @@ index=${SLURM_ARRAY_TASK_ID:-0}
 index=$((index+1))
 samplesheet=samplesheet.csv
 threads=${SLURM_CPUS_PER_TASK:-1}
+call_folder=squire_call
 extra_parameters=()
 
 # Usage function
 usage() {
   echo
-  echo "Usage: squire-call.sh [-i <int>] [-s <samplesheet.csv>] [-p <int>] [-h]"
+  echo "Usage: squire-call.sh [-i <int>] [-s <samplesheet.csv>] [-o <squire_call>] [-p <int>] [-h]"
   echo "  -i: Index of group in samplesheet (default: 1 or SLURM_ARRAY_TASK_ID+1 if present)"
   echo "  -s: Samplesheet file (default: samplesheet.csv)"
+  echo "  -o: Output folder (default: squire_call)"
   echo "  -p: Number of threads (default: 1 or SLURM_CPUS_PER_TASK if present)"
   echo "  -h: Show this help and squire Call help"
   echo ""
@@ -42,6 +44,9 @@ while [ "$1" != "" ]; do
       ;;
     -s)	shift
       samplesheet=$1
+      ;;
+    -o | --call_folder)	shift
+      call_folder=$1
       ;;
     -p | --pthreads )	shift
       threads=$1
@@ -124,9 +129,12 @@ else
   control_samples=${control_samples:1}
 fi
 
-echo "Running squire Call with parameters --pthreads $threads --condition1 $group --condition2 $control_group --group1 $samples --group2 $control_samples ${extra_parameters[*]}"
+# Prevent output file being overwritten when multiple groups are compared.
+call_folder="${call_folder}_${group}"
+echo "Running squire Call with parameters --pthreads $threads --call_folder $call_folder --condition1 $group --condition2 $control_group --group1 $samples --group2 $control_samples ${extra_parameters[*]}"
 bash "${script_path}/squire.sh" Call \
     --pthreads "$threads" \
+    --call_folder "$call_folder" \
     --condition1 "$group" \
     --condition2 "$control_group" \
     --group1 "$samples" \
