@@ -105,7 +105,7 @@ then
 fi
 
 echo "Running squire Count with parameters --pthreads $threads --name $sample --count_folder $count_folder ${extra_parameters[*]}"
-bash squire.sh Count \
+bash "${script_path}/squire.sh" Count \
     --pthreads "$threads" \
     --name "$sample" \
     --count_folder "$count_folder" \

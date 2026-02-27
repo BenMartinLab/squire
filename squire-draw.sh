@@ -80,7 +80,7 @@ sample=$(awk -F ',' -v sample_index="$index" \
     "$samplesheet")
 
 echo "Running squire Draw with parameters --pthreads $threads --name $sample ${extra_parameters[*]}"
-bash squire.sh Draw \
+bash "${script_path}/squire.sh" Draw \
     --pthreads "$threads" \
     --name "$sample" \
     "${extra_parameters[@]}"
