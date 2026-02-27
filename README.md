@@ -147,6 +147,20 @@ sbatch --array="$group_array" squire-call.sh \
     --verbosity
 ```
 
+If you don't want to provide a `control` column in the `samplesheet` file or you want to use multiple controls for a group, you can run `SQuIRE Call` manually by providing all the parameters.
+Here is an example.
+
+```shell
+sbatch --cpus-per-task=2 --mem=8G squire.sh Call \
+    --pthreads 2 \
+    --condition1 PF9363 \
+    --condition2 DMSO \
+    --group1 PF9363_REP1,PF9363_REP2 \
+    --group2 DMSO_REP1,DMSO_REP2 \
+    --output_format pdf \
+    --verbosity
+```
+
 ## Run SQuIRE Draw
 
 See [SQuIRE Draw documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-draw)
