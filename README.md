@@ -77,33 +77,6 @@ read_length=100
 strandedness=0
 ```
 
-## Create samples and dataset files
-
-> [!IMPORTANT]
-> Ignore this section. It will be removed.
-
-See [samples.txt](samples.txt) and [dataset.txt](dataset.txt) for examples. Any lines starting with `#` are ignored.
-
-The `samples.txt` file should contain the following columns. Additional columns are ignored.
-1. Sample name.
-
-The sample names must match FASTQ files. Here are the expected FASTQ filenames:
-1. ${sample_name}_R1.fastq.gz
-2. ${sample_name}_R2.fastq.gz
-
-The `dataset.txt` file should contain the following columns.
-1. Dataset name.
-2. Sample names separated by commas.
-3. Dataset's experimental condition.
-4. Name of control dataset, if applicable. If dataset is a control, lease empty.
-
-You should save the number of samples and dataset in variables to use later with `sbatch`.
-
-```shell
-samples_array=$(awk '$0 !~ /[ \t]*#/ {ln++} END {print "0-"ln-1}' samples.txt)
-dataset_array=$(awk '{ if ($0 !~ /[ \t]*#/) {ln++; if ($4 != "") {array=array","ln-1}}} END {print substr(array, 2)}' dataset.txt)
-```
-
 ## Copy genome for SQuIRE
 
 First, set the location of the genomes.
