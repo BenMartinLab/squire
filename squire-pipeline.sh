@@ -95,19 +95,18 @@ do
       'NR > 1 && $1 == sample {print $0}' \
       "$samplesheet")
   readarray -t samplesheet_lines <<< "$samplesheet_lines_raw"
+  reads_1=
+  reads_2=
   for line in "${samplesheet_lines[@]}"
   do
     readarray -d ',' -t sample_metadata <<< "$line"
     reads_1+=",${sample_metadata[1]}"
     reads_2+=",${sample_metadata[2]}"
   done
-  if [[ -n "$reads_1" ]]
-  then
-    reads_1=${reads_1:1}
-  fi
+  reads_1=${reads_1:1}
+  reads_2=${reads_2:1}
   if [[ -n "$reads_2" ]] && ! [[ "$reads_2" =~ \,* ]]
   then
-    reads_2=${reads_2:1}
     reads_2_parameters=("--read2" "$reads_2")
   else
     reads_2=""
