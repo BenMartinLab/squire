@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=def-bmartin
-#SBATCH --time=12:00:00
+#SBATCH --time=3:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
 #SBATCH --output=squire-draw-%A_%a.out

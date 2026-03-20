@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=def-bmartin
-#SBATCH --time=12:00:00
+#SBATCH --time=3:00:00
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=8G
 #SBATCH --output=squire-call-%A_%a.out
