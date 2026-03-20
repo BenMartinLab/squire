@@ -63,6 +63,13 @@ then
   usage
   exit 1
 fi
+control_column=$(awk -F ',' \
+    'NR == 1 {for (i = 1; i <= NF; i++) if ($i == "control") {print i; exit(0)}}' \
+    "$samplesheet")
+if [[ -z "$control_column" ]]
+then
+  >&2 echo "Warning: no 'control' column found in samplesheet $samplesheet, squire Call will not be run"
+fi
 if ! [[ "$read_length" =~ ^[0-9]+$ ]]
 then
   >&2 echo "Error: -l parameter '$read_length' is not an integer."
@@ -137,3 +144,67 @@ do
       --normlib \
       --verbosity
 done
+
+if [[ -n "$control_column" ]]
+then
+  groups_raw=$(awk -F ',' \
+      '{group=gensub(/(.*)_REP[0-9]*/,"\\1","1",$1)} NR > 1 && !seen[group] {seen[group]++; print group}' \
+      "$samplesheet")
+  readarray -t groups <<< "$groups_raw"
+
+  for group in "${groups[@]}"
+  do
+    control_group=$(awk -F ',' -v group="$group" -v control_column="$control_column" \
+        'NR > 1 && $1 ~ "^"group {control_group=gensub(/(.*)_REP[0-9]*/,"\\1","1",$control_column); print control_group; exit(0)}' \
+        "$samplesheet")
+    if [[ -z "$control_group" ]]
+    then
+      >&2 echo "Info: no control group found for group $group, skipping squire Call."
+      continue
+    fi
+
+    samplesheet_lines_raw=$(awk -F ',' -v group="$group" \
+        'NR > 1 && $1 ~ "^"group {print $0}' \
+        "$samplesheet")
+    readarray -t samplesheet_lines <<< "$samplesheet_lines_raw"
+    group_samples_raw=$(awk -F ',' '!seen[$1] {seen[$1]++; print $1}' <<< "${samplesheet_lines_raw}")
+    group_samples=$(tr '\n' ',' <<< "$group_samples_raw")
+    group_samples="${group_samples%,}"
+    control_samples_raw=$(awk -F ',' -v control_column="$control_column" '!seen[$control_column] {seen[$control_column]++; print $control_column}' <<< "${samplesheet_lines_raw}")
+    control_samples=$(tr '\n' ',' <<< "$control_samples_raw")
+    control_samples="${control_samples%,}"
+    reads_1_raw=$(awk -F ',' '{print $2}' <<< "${samplesheet_lines_raw}")
+    reads_1=$(tr '\n' ',' <<< "$reads_1_raw")
+    reads_1="${reads_1%,}"
+    reads_2_raw=$(awk -F ',' '{print $3}' <<< "${samplesheet_lines_raw}")
+    reads_2=$(tr '\n' ',' <<< "$reads_2_raw")
+    reads_2="${reads_2%,}"
+    if [[ -z "${group_samples}" ]]
+    then
+      >&2 echo "Warning: no samples found for group $group, skipping squire Call."
+      continue
+    fi
+    if [[ -z "${control_samples}" ]]
+    then
+      >&2 echo "Warning: no control samples found for control group $control_group, skipping squire Call. Experimental group is $group."
+      continue
+    fi
+    if [[ "$reads_2" =~ \,* ]]
+    then
+      reads_2=""
+    fi
+
+    # Prevent output file being overwritten when multiple groups are compared.
+    call_folder="squire_call_${group}"
+    #@4,2,squire-call,genome_bed,reads_1.reads_2,sbatch --cpus-per-task=2 --mem=8G --time=3:00:00
+    squire.sh Call \
+        --pthreads 2 \
+        --call_folder "$call_folder" \
+        --condition1 "$group" \
+        --condition2 "$control_group" \
+        --group1 "$group_samples" \
+        --group2 "$control_samples" \
+        --output_format pdf \
+        --verbosity
+  done
+fi

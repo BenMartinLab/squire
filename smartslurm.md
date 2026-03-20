@@ -17,9 +17,9 @@ To install the scripts on Alliance Canada servers and create containers, see [IN
 
 Create the samplesheet file using the instructions for nf-core RNA-seq pipeline. See [Samplesheet for RNA-seq pipeline](https://nf-co.re/rnaseq/3.22.2/docs/usage/#samplesheet-input)
 
-To use `squire-call.sh`, you must provide a `control` column containing the name of the control samples associated with the experimental samples, when applicable.
+To get the output from [squire Call](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-call), you must provide a `control` column containing the name of the control samples associated with the experimental samples, when applicable.
 This is an additional column not normally present in the samplesheet used by nf-core's RNA-seq pipeline.
-Any samples without a value in the `control` column will not be compared with `squire-call.sh`.
+Any samples without a value in the `control` column will not be compared with `squire Call`.
 
 [Here is an example of a samplesheet file](samplesheet.csv)
 
@@ -52,20 +52,6 @@ export PATH=$project/scripts/SmartSlurm/bin:$PATH
 
 ```shell
 samplesheet=samplesheet.csv
-```
-
-```shell
-samples_array=$(awk -F ',' \
-    'NR > 1 && !seen[$1] {ln++; seen[$1]++} END {print "0-"ln-1}' \
-    "$samplesheet")
-```
-
-```shell
-group_array=$(awk -F ',' \
-    'NR == 1 {for (i = 1; i <= NF; i++) if ($i == "control") {control_column=i; break}}
-    {group=gensub(/(.*)_REP[0-9]**/,"\\1","1",$1)} NR > 1 && !seen[group] {ln++; seen[group]++; {if ($control_column != "") {array=array","ln-1}}}
-    END {print substr(array, 2)}' \
-    "$samplesheet")
 ```
 
 > [!IMPORTANT]
@@ -128,36 +114,12 @@ runAsPipeline \
     run
 ```
 
-This will run SQuIRE `Map`, `Count` and `Draw` automatically.
-
-## Run SQuIRE Call
-
-See [SQuIRE Call documentation](https://github.com/wyang17/SQuIRE?tab=readme-ov-file#squire-call)
-
-```shell
-sbatch --array=$group_array squire-call.sh \
-    -s $samplesheet \
-    --output_format pdf \
-    --verbosity
-```
-
-If you don't want to provide a `control` column in the `samplesheet` file or you want to use multiple controls for a group, you can run `SQuIRE Call` manually by providing all the parameters.
-Here is an example.
-
-```shell
-sbatch --cpus-per-task=2 --mem=8G squire.sh Call \
-    --pthreads 2 \
-    --condition1 PF9363 \
-    --condition2 DMSO \
-    --group1 PF9363_REP1,PF9363_REP2 \
-    --group2 DMSO_REP1,DMSO_REP2 \
-    --output_format pdf \
-    --call_folder squire_call_PF9363 \
-    --verbosity
-```
+This will run SQuIRE `Map`, `Count`, `Draw` and `Call` automatically.
 
 ## Output
 
-The most interesting output folder are:
-* squire_call
+The output folders are:
+* squire_count
+* squire_call_*
 * squire_draw
+* squire_map
