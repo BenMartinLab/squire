@@ -177,6 +177,8 @@ sbatch --array=$samples_array squire-draw.sh \
 
 ## Output
 
-The most interesting output folder are:
-* squire_call
+The output folders are:
+* squire_count
+* squire_call_*
 * squire_draw
+* squire_map
