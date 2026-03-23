@@ -90,6 +90,16 @@ then
   exit 1
 fi
 
+parse_samplesheet_column() {
+  local column=$1
+  local samplesheet_lines=$2
+  raw_values=$(awk -F ',' -v column="$column" \
+      '!seen[$column] {seen[$column]++; print $column}' \
+      <<< "$samplesheet_lines")
+  readarray -t values <<< "$raw_values"
+  IFS=,; echo "${values[*]}"
+}
+
 samples_raw=$(awk -F ',' 'NR > 1 && !seen[$1] {seen[$1]++; print $1}' "$samplesheet")
 readarray -t samples <<< "$samples_raw"
 # genome_bed is used by runAsPipeline for resource estimation
@@ -98,20 +108,11 @@ genome_bed=$(head -n 1 <<< "$genome_bed_files")
 
 for sample in "${samples[@]}"
 do
-  samplesheet_lines_raw=$(awk -F ',' -v sample="$sample" \
+  samplesheet_lines=$(awk -F ',' -v sample="$sample" \
       'NR > 1 && $1 == sample {print $0}' \
       "$samplesheet")
-  readarray -t samplesheet_lines <<< "$samplesheet_lines_raw"
-  reads_1=
-  reads_2=
-  for line in "${samplesheet_lines[@]}"
-  do
-    readarray -d ',' -t sample_metadata <<< "$line"
-    reads_1+=",${sample_metadata[1]}"
-    reads_2+=",${sample_metadata[2]}"
-  done
-  reads_1=${reads_1:1}
-  reads_2=${reads_2:1}
+  reads_1=$(parse_samplesheet_column 2 "$samplesheet_lines")
+  reads_2=$(parse_samplesheet_column 3 "$samplesheet_lines")
   if [[ -n "$reads_2" ]] && ! [[ "$reads_2" =~ \,* ]]
   then
     reads_2_parameters=("--read2" "$reads_2")
@@ -163,22 +164,13 @@ then
       continue
     fi
 
-    samplesheet_lines_raw=$(awk -F ',' -v group="$group" \
+    samplesheet_lines=$(awk -F ',' -v group="$group" \
         'NR > 1 && $1 ~ "^"group {print $0}' \
         "$samplesheet")
-    readarray -t samplesheet_lines <<< "$samplesheet_lines_raw"
-    group_samples_raw=$(awk -F ',' '!seen[$1] {seen[$1]++; print $1}' <<< "${samplesheet_lines_raw}")
-    group_samples=$(tr '\n' ',' <<< "$group_samples_raw")
-    group_samples="${group_samples%,}"
-    control_samples_raw=$(awk -F ',' -v control_column="$control_column" '!seen[$control_column] {seen[$control_column]++; print $control_column}' <<< "${samplesheet_lines_raw}")
-    control_samples=$(tr '\n' ',' <<< "$control_samples_raw")
-    control_samples="${control_samples%,}"
-    reads_1_raw=$(awk -F ',' '{print $2}' <<< "${samplesheet_lines_raw}")
-    reads_1=$(tr '\n' ',' <<< "$reads_1_raw")
-    reads_1="${reads_1%,}"
-    reads_2_raw=$(awk -F ',' '{print $3}' <<< "${samplesheet_lines_raw}")
-    reads_2=$(tr '\n' ',' <<< "$reads_2_raw")
-    reads_2="${reads_2%,}"
+    group_samples=$(parse_samplesheet_column 1 "$samplesheet_lines")
+    control_samples=$(parse_samplesheet_column "$control_column" "$samplesheet_lines")
+    reads_1=$(parse_samplesheet_column 2 "$samplesheet_lines")
+    reads_2=$(parse_samplesheet_column 3 "$samplesheet_lines")
     if [[ -z "${group_samples}" ]]
     then
       >&2 echo "Warning: no samples found for group $group, skipping squire Call."
