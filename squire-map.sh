@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=def-bmartin
-#SBATCH --time=1-00:00:00
+#SBATCH --time=3:00:00
 #SBATCH --cpus-per-task=24
 #SBATCH --mem=60G
 #SBATCH --output=squire-map-%A_%a.out
@@ -92,10 +92,13 @@ if [[ -n "$reads_1" ]]
 then
   reads_1=${reads_1:1}
 fi
-if [[ -n "$reads_2" ]]
+if [[ -n "$reads_2" ]] && ! [[ "$reads_2" =~ \,* ]]
 then
   reads_2=${reads_2:1}
   reads_2_parameters=("--read2" "$reads_2")
+else
+  reads_2=""
+  reads_2_parameters=()
 fi
 
 echo "Running squire Map with parameters --pthreads $threads --name $sample --read1 $reads_1 ${reads_2_parameters[*]} ${extra_parameters[*]}"
