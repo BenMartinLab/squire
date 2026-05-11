@@ -8,10 +8,13 @@
 # exit when any command fails
 set -e
 
+script_name=$(basename "${BASH_SOURCE[0]}")
 script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-if ! [[ -f "${script_path}/squire-map.sh" ]] && [[ -n "$SLURM_JOB_ID" ]]
+if ! [[ -f "${script_path}/${script_name}" ]] && [[ -n "$SLURM_JOB_ID" ]]
 then
-  script_path=$(dirname "$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')")
+  slurm_command=$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')
+  script_name=$(basename "$slurm_command")
+  script_path=$(dirname "$slurm_command")
 fi
 
 index=${SLURM_ARRAY_TASK_ID:-0}
@@ -23,7 +26,7 @@ extra_parameters=()
 # Usage function
 usage() {
   echo
-  echo "Usage: squire-map.sh [-i <int>] [-s <samplesheet.csv>] [-p <int>] [-h]"
+  echo "Usage: $script_name [-i <int>] [-s <samplesheet.csv>] [-p <int>] [-h]"
   echo "  -i: Index of sample in samplesheet (default: 1 or SLURM_ARRAY_TASK_ID+1 if present)"
   echo "  -s: Samplesheet file (default: samplesheet.csv)"
   echo "  -p: Number of threads (default: 1 or SLURM_CPUS_PER_TASK if present)"

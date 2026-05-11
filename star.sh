@@ -18,10 +18,13 @@ fi
 
 threads=${SLURM_CPUS_PER_TASK:-1}
 
+script_name=$(basename "${BASH_SOURCE[0]}")
 script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-if ! [[ -f "${script_path}/nfcore-rnaseq.sh" ]] && [[ -n "$SLURM_JOB_ID" ]]
+if ! [[ -f "${script_path}/${script_name}" ]] && [[ -n "$SLURM_JOB_ID" ]]
 then
-  script_path=$(dirname "$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')")
+  slurm_command=$(scontrol show job "$SLURM_JOB_ID" | awk -F '=' '$0 ~ /Command=/ {print $2; exit}')
+  script_name=$(basename "$slurm_command")
+  script_path=$(dirname "$slurm_command")
 fi
 
 containers=("${script_path}"/squire-*.sif)
